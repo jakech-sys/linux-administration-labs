@@ -1,0 +1,32 @@
+# Credentials and local environment settings
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_rsa.*
+id_ed25519
+id_ed25519.*
+credentials/
+secrets/
+
+# Local editor and operating system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Temporary working files
+tmp/
+temp/
+__pycache__/
+*.py[cod]
+
+# Review all staged files before publishing.
+# Ignore rules do not remove files already tracked by Git.
