@@ -1,122 +1,110 @@
-# Lab 01 · Create a non-interactive user
+# Lab 01: Non-Interactive User Account
 
-[Back to the lab index](../README.md)
+[Return to the lab index](../README.md)
 
 | Item | Detail |
 | --- | --- |
 | Date | October 24, 2026 |
 | Environment | KodeKloud Linux practice environment |
-| Target | App Server 2; terminal prompt showed `stapp02` |
-| Login account | `steve` |
-| User created | `ravi` |
-| Result | Account entry verified with `/sbin/nologin` |
-| Platform grading | Not recorded |
+| Target | App Server 2; remote hostname displayed as `stapp02` |
+| Administrative login | `steve` |
+| Account created | `ravi` |
+| Verification | Local account entry specifies `/sbin/nologin` |
 
 ## Objective
 
-Create a user named `ravi` with a non-interactive login shell for a backup-agent scenario.
+Create the `ravi` account with a non-interactive login shell to meet a backup-agent requirement.
 
-A service can use an account identity to own files and run processes without requiring a human login session. Assigning `nologin` refuses shell logins; it does not prevent a service or an administrator from running a process under that user's identity. File permissions and service configuration remain separate controls.
-
-## Prerequisites and repeat-run considerations
-
-- Access to the assigned practice server and an account authorized to use `sudo`.
-- Confirmation that the target is App Server 2 using the lab's infrastructure panel.
-- A valid `nologin` executable at the configured path. Its location can vary between distributions.
-- A new username: `useradd` creates an account and will fail if `ravi` already exists. Inspect an existing account before deciding whether any change is appropriate.
-
-The recorded command does not request a system account with `-r`, create a home directory explicitly with `-m`, or assign backup permissions. The exercise required a non-interactive shell; those additional settings were outside its scope.
+An account can own files and run service processes without providing an interactive shell. Configuring `nologin` restricts shell login; file permissions and service privileges require separate configuration.
 
 ## Implementation
 
-### 1. Connect to the target server
+### 1. Establish the SSH session
 
-From the lab's starting terminal, I connected using:
+Connection command reported for this exercise:
 
 ```bash
 ssh steve@server02
 ```
 
-The remote prompt showed:
+The remote terminal displayed:
 
 ```text
 [steve@stapp02 ~]$
 ```
 
-The connection name and displayed hostname differ. For a repeat of this lab, confirm the target against KodeKloud's **Details of all Users and Servers** panel rather than assuming the names are interchangeable in another environment.
+The connection name and displayed hostname differ. The lab's **Details of all Users and Servers** panel is the reference for identifying the assigned server.
 
 ### 2. Create the account
 
-Run on **App Server 2**, signed in as `steve`:
+Executed on App Server 2 as `steve`:
 
 ```bash
 sudo useradd -s /sbin/nologin ravi
 ```
 
-| Component | Purpose |
+| Component | Function |
 | --- | --- |
-| `sudo` | Run with administrator privileges |
-| `useradd` | Create the account |
-| `-s /sbin/nologin` | Set its login shell to `/sbin/nologin` |
-| `ravi` | Specify the username |
+| `sudo` | Executes the command with administrative privileges |
+| `useradd` | Creates the user account |
+| `-s /sbin/nologin` | Assigns the non-interactive login shell |
+| `ravi` | Specifies the username |
 
-The command returned to the prompt without an error after authentication.
+The command returned to the prompt without an error after successful authentication.
 
-### 3. Verify the account entry
+### 3. Verify the configuration
 
-Run on **App Server 2**:
+Executed on App Server 2:
 
 ```bash
 grep "ravi" /etc/passwd
 ```
 
-Observed output:
+Recorded output:
 
 ```text
 ravi:x:1001:1001::/home/ravi:/sbin/nologin
 ```
 
-This is the actual verification output from the exercise, not example output.
-
-| Field | Observed value | Meaning |
+| Field | Value | Interpretation |
 | --- | --- | --- |
-| Username | `ravi` | Created account |
-| Password field | `x` | Password information is stored separately in the shadow password database |
-| UID | `1001` | Numeric user identity |
-| Primary GID | `1001` | Numeric primary group identity |
-| Comment | Empty | No account description was specified |
-| Home | `/home/ravi` | Configured home path; this does not prove the directory exists |
-| Shell | `/sbin/nologin` | Configured non-interactive login shell |
+| Username | `ravi` | Local account name |
+| Password field | `x` | Password information is maintained in the shadow password database |
+| User ID | `1001` | Numeric user identity |
+| Primary group ID | `1001` | Numeric primary group identity |
+| Comment | Empty | No account description supplied |
+| Home directory | `/home/ravi` | Configured home path; directory existence was not checked |
+| Login shell | `/sbin/nologin` | Non-interactive login shell |
 
-UIDs and GIDs may differ in another environment.
+## Operational Notes
 
-## Troubleshooting and lessons
+- Two initial `sudo` authentication attempts failed; a subsequent attempt succeeded.
+- `useradd` requires an unused username. Inspect an existing account before attempting to change it.
+- The `nologin` executable's path can vary by distribution.
+- The command does not explicitly request a system account with `-r`, create a home directory with `-m`, or assign backup permissions.
+- Ctrl+C interrupts a command or cancels input. Use `exit` to close the SSH session.
 
-Two initial `sudo` password attempts were rejected. Authentication subsequently succeeded, and the account entry was present. The password prompt was for `steve`, the invoking user.
+## Additional Verification
 
-The captured session ends with Ctrl+C at the prompt. Ctrl+C cancels input or interrupts a foreground command; it does not close an SSH session. Use `exit` to leave the remote shell. No exit command is included in the captured evidence.
-
-## Suggested follow-up checks
-
-**These commands were not part of the recorded execution.** Run them on the target server if further verification is needed:
+The following checks are recommended for a repeat exercise. They were not included in the recorded execution.
 
 ```bash
-# Look up the exact username through configured account sources.
+# Retrieve the exact account through configured account sources.
 getent passwd ravi
 
-# Inspect the numeric identity and group membership.
+# Inspect the account's identity and group membership.
 id ravi
 
-# Alternatively, match only this username in the local account file.
+# Match the exact username in the local account file.
 grep '^ravi:' /etc/passwd
 ```
 
-The original `grep "ravi"` worked here, but it can match text elsewhere in an account entry. An exact account lookup is clearer.
+An exact lookup avoids matching unrelated text elsewhere in an account entry.
 
-## Outcome and limits
+## Result
 
-The observed account entry confirms that `ravi` exists locally and is configured with `/sbin/nologin`. No interactive login test, backup-agent execution, home-directory check, or KodeKloud grading result is claimed.
+The recorded output confirms that the local `ravi` account is configured with `/sbin/nologin`. Interactive login behavior and backup-agent operation were not tested. A KodeKloud grading result was not included in the execution record.
 
-## Source
+## Attribution
 
-Practice environment and original scenario: [KodeKloud](https://kodekloud.com/). This write-up summarizes my execution without reproducing the full assignment.
+Practice environment and original scenario: [KodeKloud](https://kodekloud.com/). This report documents the implementation and observed result in the author's own words.
