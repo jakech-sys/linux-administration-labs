@@ -18,6 +18,15 @@ Create a user named `ravi` with a non-interactive login shell for a backup-agent
 
 A service can use an account identity to own files and run processes without requiring a human login session. Assigning `nologin` refuses shell logins; it does not prevent a service or an administrator from running a process under that user's identity. File permissions and service configuration remain separate controls.
 
+## Prerequisites and repeat-run considerations
+
+- Access to the assigned practice server and an account authorized to use `sudo`.
+- Confirmation that the target is App Server 2 using the lab's infrastructure panel.
+- A valid `nologin` executable at the configured path. Its location can vary between distributions.
+- A new username: `useradd` creates an account and will fail if `ravi` already exists. Inspect an existing account before deciding whether any change is appropriate.
+
+The recorded command does not request a system account with `-r`, create a home directory explicitly with `-m`, or assign backup permissions. The exercise required a non-interactive shell; those additional settings were outside its scope.
+
 ## Implementation
 
 ### 1. Connect to the target server
